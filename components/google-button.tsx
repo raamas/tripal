@@ -23,11 +23,11 @@ export default function GoogleButton({
     //   password: "password 99.",
     // });
     console.log(`DEBUG: running auth`);
-
+    console.log();
     const { data: user, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `http://localhost:3000/auth/callback`,
+        redirectTo: `${window.location.origin}/auth/callback`,
       },
     });
     console.log(`DEBUG: running done`);
