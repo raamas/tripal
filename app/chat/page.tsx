@@ -21,11 +21,9 @@ export default function ChatPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const form = e.target as HTMLFormElement;
-    const userPromptInput = form.elements.namedItem(
-      "userPrompt"
-    ) as HTMLInputElement;
-    userPromptInput.disabled = true;
+    e.target.userPrompt.disabled = true;
+
+    const messageCount = messageHistory.length + 1;
 
     setUserPrompt("");
     setMessages((messageHistory) => [
@@ -39,9 +37,6 @@ export default function ChatPage() {
 
     setLoading(true);
 
-    const supabase = createClient();
-    const { data: user, error } = await supabase.auth.getUser();
-    // const modelResponse = await GeminiChat.sendMessage({ message: userPrompt });
     const res = await fetch("/api/", {
       method: "POST",
       headers: {
@@ -63,7 +58,7 @@ export default function ChatPage() {
       },
       ...messageHistory,
     ]);
-    userPromptInput.disabled = false;
+    e.target.userPrompt.disabled = false;
     setTimeout(() => {}, 30000);
 
     setLoading(false);

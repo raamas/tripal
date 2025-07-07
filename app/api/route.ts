@@ -1,4 +1,3 @@
-import { GoogleGenAI } from "@google/genai";
 import { GeminiChat } from "./model";
 
 export async function POST(request: Request) {
