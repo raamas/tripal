@@ -23,7 +23,7 @@ export default function GoogleButton({
     //   password: "password 99.",
     // });
     console.log(`DEBUG: running auth`);
-
+    console.log();
     const { data: user, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
