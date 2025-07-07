@@ -70,8 +70,9 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-200 to-blue-400 flex flex-col items-center justify-center p-4">
-      <div className="messageHistory w-full flex flex-col-reverse overflow-auto min-h-[80vh] max-h-[85vh] no-scrollbar scroll-smooth snap-y scroll-pb-4">
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-2 ">
+      <h1 className="font-semibold text-4xl text-blue-700">TRIPAL AI</h1>
+      <div className="messageHistory w-full flex flex-col-reverse overflow-auto min-h-[75vh] max-h-[80vh] no-scrollbar scroll-smooth snap-y scroll-p-12 ">
         {messageHistory.map((m: Message) => (
           <MessageBox key={m.id} type={m.type} loading={loading}>
             {m.text}
@@ -79,7 +80,7 @@ export default function ChatPage() {
         ))}
         {/* <div className="anchor"></div> */}
       </div>
-      <div className="chat-container w-full">
+      <div className="chat-container w-full ">
         <Chat
           userPrompt={userPrompt}
           setUserPrompt={setUserPrompt}
