@@ -21,7 +21,11 @@ export default function ChatPage() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    e.target.userPrompt.disabled = true;
+    const form = e.target as HTMLFormElement;
+    const userPromptInput = form.elements.namedItem(
+      "userPrompt"
+    ) as HTMLInputElement;
+    userPromptInput.disabled = true;
 
     setUserPrompt("");
     setMessages((messageHistory) => [
@@ -59,7 +63,7 @@ export default function ChatPage() {
       },
       ...messageHistory,
     ]);
-    e.target.userPrompt.disabled = false;
+    userPromptInput.disabled = false;
     setTimeout(() => {}, 30000);
 
     setLoading(false);

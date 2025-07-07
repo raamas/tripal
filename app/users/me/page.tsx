@@ -1,10 +1,11 @@
 "use client";
 import { createClient } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
+import { User } from "@supabase/supabase-js";
 
 export default function Me() {
   const supabase = createClient();
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState<User>();
   //   get the user object from supabase
   // ask the user for their location information
   // their avg travel budget
@@ -22,5 +23,5 @@ export default function Me() {
     };
     getUser();
   }, []);
-  return <h1>{user.email}</h1>;
+  return <h1>{user?.email}</h1>;
 }

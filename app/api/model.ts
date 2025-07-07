@@ -26,7 +26,6 @@ Always type questions in bold text
 export const Gemini = new GoogleGenAI({});
 export const GeminiChat = Gemini.chats.create({
   model: "gemini-2.5-flash",
-  maxOutputTokens: 200,
   history: [
     {
       role: "user",
