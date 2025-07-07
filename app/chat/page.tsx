@@ -23,6 +23,8 @@ export default function ChatPage() {
     e.preventDefault();
     e.target.userPrompt.disabled = true;
 
+    const messageCount = messageHistory.length + 1;
+
     setUserPrompt("");
     setMessages((messageHistory) => [
       {
@@ -35,9 +37,6 @@ export default function ChatPage() {
 
     setLoading(true);
 
-    const supabase = createClient();
-    const { data: user, error } = await supabase.auth.getUser();
-    // const modelResponse = await GeminiChat.sendMessage({ message: userPrompt });
     const res = await fetch("/api/", {
       method: "POST",
       headers: {
@@ -46,19 +45,22 @@ export default function ChatPage() {
       body: JSON.stringify({ prompt: userPrompt }),
     });
 
-    const { modelResponse } = await res.json();
-    if (modelResponse) {
-      setUserPrompt("");
-    }
+    // const { modelResponse } = await res.json();
+    // if (modelResponse) {
+    //   setUserPrompt("");
+    // }
 
-    setMessages((messageHistory: Message[]) => [
-      {
-        id: messageHistory.length + 1,
-        type: "modelResponse",
-        text: modelResponse,
-      },
-      ...messageHistory,
-    ]);
+    for await (const chunk of res.body!) {
+      console.log(chunk);
+    }
+    // setMessages((messageHistory: Message[]) => [
+    //   {
+    //     id: messageHistory.length + 1,
+    //     type: "modelResponse",
+    //     text: modelResponse,
+    //   },
+    //   ...messageHistory,
+    // ]);
     e.target.userPrompt.disabled = false;
     setTimeout(() => {}, 30000);
 
