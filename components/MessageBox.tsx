@@ -20,10 +20,7 @@ export default function MessageBox({
 
   return (
     <Card
-      className={
-        "min-w-[30rem] px-4 max-w-md block rounded-xl my-2 flex-center " +
-        typeClassname
-      }
+      className={" px-4 block rounded-xl my-2 flex-center " + typeClassname}
     >
       <CardContent className="message-content p-2 ">
         <Markdown>{String(children)}</Markdown>

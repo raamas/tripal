@@ -24,7 +24,7 @@ export default function Chat({
     <form onSubmit={handleSubmit} className="w-full">
       <div
         id="userinput "
-        className="w-full bg-background flex flex-row  rounded-3xl px-2 pr-4 p-1 border border-xl border-gray-400 items-center"
+        className="w-full bg-background flex flex-row  rounded-3xl px-2 pr-4 p-1 border focus-within:border-2 border-gray-400 items-center focus-within:border-blue-500"
       >
         <Input
           type="text"

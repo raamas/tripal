@@ -45,22 +45,19 @@ export default function ChatPage() {
       body: JSON.stringify({ prompt: userPrompt }),
     });
 
-    // const { modelResponse } = await res.json();
-    // if (modelResponse) {
-    //   setUserPrompt("");
-    // }
-
-    for await (const chunk of res.body!) {
-      console.log(chunk);
+    const { modelResponse } = await res.json();
+    if (modelResponse) {
+      setUserPrompt("");
     }
-    // setMessages((messageHistory: Message[]) => [
-    //   {
-    //     id: messageHistory.length + 1,
-    //     type: "modelResponse",
-    //     text: modelResponse,
-    //   },
-    //   ...messageHistory,
-    // ]);
+
+    setMessages((messageHistory: Message[]) => [
+      {
+        id: messageHistory.length + 1,
+        type: "modelResponse",
+        text: modelResponse,
+      },
+      ...messageHistory,
+    ]);
     e.target.userPrompt.disabled = false;
     setTimeout(() => {}, 30000);
 
@@ -68,8 +65,9 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-200 to-blue-400 flex flex-col items-center justify-center p-4">
-      <div className="messageHistory w-full flex flex-col-reverse overflow-auto min-h-[80vh] max-h-[85vh] no-scrollbar scroll-smooth snap-y scroll-pb-4">
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4">
+      <h1 className="text-4xl font-bold text-blue-600">TRIPAL AI</h1>
+      <div className="messageHistory w-full flex flex-col-reverse overflow-auto min-h-[75vh] max-h-[80vh] no-scrollbar scroll-smooth snap-y scroll-pb-4">
         {messageHistory.map((m: Message) => (
           <MessageBox key={m.id} type={m.type} loading={loading}>
             {m.text}
