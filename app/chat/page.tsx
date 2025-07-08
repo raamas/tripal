@@ -16,6 +16,7 @@ interface Message {
 
 export default function ChatPage() {
   const [messageHistory, setMessages] = useState<Message[]>([]);
+  const [modelMessage, setModelMessage] = useState<Message>();
   const [userPrompt, setUserPrompt] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -27,8 +28,6 @@ export default function ChatPage() {
       "userPrompt"
     ) as HTMLInputElement;
     userPromptInput.disabled = true;
-
-    const messageCount = messageHistory.length + 1;
 
     setUserPrompt("");
     setMessages((messageHistory) => [
@@ -63,9 +62,9 @@ export default function ChatPage() {
       },
       ...messageHistory,
     ]);
-    userPromptInput.disabled = false;
-    setTimeout(() => {}, 30000);
+    // setTimeout(() => {}, 30000);
 
+    userPromptInput.disabled = false;
     setLoading(false);
   };
 
@@ -73,6 +72,9 @@ export default function ChatPage() {
     <div className="min-h-screen bg-white flex flex-col items-center justify-center p-2 ">
       <h1 className="font-semibold text-4xl text-blue-700">TRIPAL AI</h1>
       <div className="messageHistory w-full flex flex-col-reverse overflow-auto min-h-[75vh] max-h-[80vh] no-scrollbar scroll-smooth snap-y scroll-p-12 ">
+        {loading && (
+          <MessageBox type={modelMessage.type} loading={loading}></MessageBox>
+        )}
         {messageHistory.map((m: Message) => (
           <MessageBox key={m.id} type={m.type} loading={loading}>
             {m.text}
