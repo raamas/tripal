@@ -10,13 +10,12 @@ export default function MessageBox({
   children: React.ReactNode;
   type: "userPrompt" | "modelResponse";
   loading: boolean;
-  // className: string | null;
 }) {
   const loadingStyles = loading && " animate-pulse ";
   const typeClassname =
     type == "modelResponse"
-      ? " self-start p-2 w-full " + loading
-      : " self-end italic font-light bg-blue-600 border-xs border-blue-400 text-neutral-200 ";
+      ? " self-start p-2 w-full " + loadingStyles
+      : " self-end font-light bg-blue-700 border-xs shadow-sm/10 border-blue00 text-neutral-100 ";
 
   return (
     <Card

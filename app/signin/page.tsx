@@ -1,20 +1,13 @@
-"use client";
-
 import type React from "react";
 
-// import { useState } from "react";
-// import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { TripalIcon } from "../../components/tripal-icon";
+import { TripalIcon } from "@/components/tripal-icon";
 import Link from "next/link";
-// import { useRouter } from "next/navigation";
 import GoogleButton from "@/components/google-button";
 
-export default function SignInPage() {
-  // const router = useRouter();
-
+export default async function SignInPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-blue-200 to-blue-400 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-white flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-white/90 backdrop-blur-sm shadow-xl">
         <CardHeader className="text-center pb-2">
           <div className="flex justify-center items-center space-x-2 mb-4">

@@ -2,7 +2,9 @@
 import type React from "react";
 import { Button } from "./ui/button";
 // import { Children } from "react";
+// import { handleGoogleLogin } from "@/utils/loginFunction";
 import { createClient } from "@/utils/supabase/client";
+import { handleGoogleLogin } from "@/app/actions/auth";
 
 interface GoogleButtonProps {
   className?: string;
@@ -13,36 +15,13 @@ export default function GoogleButton({
   className,
   children,
 }: GoogleButtonProps) {
-  const handleClick = async () => {
-    console.log("DEBUG: sign in with google");
-    console.log(`DEBUG: CreateClient`);
-    const supabase = await createClient();
-    console.log(`DEBUG: Created`);
-    // const { data: user, error } = await supabase.auth.signUp({
-    //   email: "omardenilson007@gmail.com",
-    //   password: "password 99.",
-    // });
-    console.log(`DEBUG: running auth`);
-    console.log();
-    const { data: user, error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-    console.log(`DEBUG: running done`);
-
-    if (error) {
-      console.log("DEBUG: errorCoño manooo");
-      console.log(error);
-    }
-    console.log("DEBUG: done?");
-    console.log(user);
-  };
+  const supabase = createClient();
 
   return (
-    <Button onClick={handleClick} className={className}>
-      {children}
-    </Button>
+    <form action={handleGoogleLogin}>
+      <Button type="submit" className={className}>
+        {children}
+      </Button>
+    </form>
   );
 }

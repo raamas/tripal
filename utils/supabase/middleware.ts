@@ -2,7 +2,6 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function updateSession(request: NextRequest) {
-  console.log("DEBUG LOG: update session middleware");
   let supabaseResponse = NextResponse.next({
     request,
   });
@@ -38,26 +37,20 @@ export async function updateSession(request: NextRequest) {
 
   const {
     data: { user },
-    error,
   } = await supabase.auth.getUser();
 
   if (
     !user &&
     !request.nextUrl.pathname.startsWith("/signin") &&
     !request.nextUrl.pathname.startsWith("/auth") &&
-    !request.nextUrl.pathname.startsWith("/")
+    !request.nextUrl.pathname.startsWith("/welcome")
   ) {
-    // no user, potentially respond by redirecting the user to the signin page
+    // no user, potentially respond by redirecting the user to the login page
     const url = request.nextUrl.clone();
-    console.log("error: ", error);
-
     url.pathname = "/signin";
     return NextResponse.redirect(url);
   }
 
-  if (error) {
-    console.log("error: ", error);
-  }
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
   // If you're creating a new response object with NextResponse.next() make sure to:
   // 1. Pass the request in it, like so:
