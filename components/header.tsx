@@ -13,7 +13,10 @@ export function Header() {
     const getUser = async () => {
       const { data, error } = await supabase.auth.getUser();
       if (error) {
-        console.log("Error getting user object (app/)");
+        console.log(
+          "Error getting user object (/welcome header): ",
+          error.message
+        );
         return error;
       }
       setUser(data.user);
