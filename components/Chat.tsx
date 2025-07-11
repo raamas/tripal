@@ -127,7 +127,7 @@ export default function Chat() {
   return (
     <div className="flex justify-center">
       {/* <Messages /> */}
-      <div className="messageHistory w-[80vw] flex flex-col min-h-[80vh] my-16 ">
+      <div className="messageHistory w-[80vw] flex flex-col min-h-[80vh] my-20 ">
         {messageHistory.map((m: Message) => (
           <MessageBox key={m.id} type={m.type} loading={loading}>
             {m.text}

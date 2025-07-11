@@ -46,20 +46,38 @@ export async function POST(request: Request) {
 
   const history = GeminiChat.getHistory();
 
-  const { error: updateError, data } = await supabase
-    .from("user_chats")
-    .upsert({ user_id: user.id, raw_chat_history: history })
-    .select()
-    .single();
+  if (!chatHistory) {
+    const { error: updateError, data } = await supabase
+      .from("user_chats")
+      .insert({ user_id: user.id, raw_chat_history: history })
+      .select()
+      .single();
 
-  if (updateError) {
-    console.log(
-      "Error updating user chat history (app/api/chat): ",
-      updateError
-    );
-    return Response.json(updateError);
+    if (updateError) {
+      console.log(
+        "Error updating user chat history (app/api/chat: insert): ",
+        updateError
+      );
+      return Response.json(updateError);
+    }
+    console.log(data);
+  } else {
+    const { error: updateError, data } = await supabase
+      .from("user_chats")
+      .update({ raw_chat_history: history })
+      .eq("user_id", user.id)
+      .select()
+      .single();
+
+    if (updateError) {
+      console.log(
+        "Error updating user chat history (app/api/chat: update): ",
+        updateError
+      );
+      return Response.json(updateError);
+    }
+    console.log(data);
   }
-  console.log(data);
 
   return Response.json({
     status: "200",

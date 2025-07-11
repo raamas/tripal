@@ -17,6 +17,7 @@ export const createChatConfig = (
   -ask questions one by one
   -use a simple lexical!
   
+  
   -Ask:
   --What are their preferred travel dates or timeframe?
   

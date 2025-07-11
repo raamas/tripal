@@ -27,7 +27,7 @@ export default function Header() {
   return (
     <section
       id="heading"
-      className=" w-[80vw] flex flex-row items-center justify-between self-center mt-20"
+      className=" w-[80vw] flex flex-row items-center justify-between self-center mt-24"
     >
       <div className="w-2/3">
         <h2 className="text-xl font-semibold">
