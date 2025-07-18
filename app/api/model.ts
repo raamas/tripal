@@ -21,6 +21,7 @@ export const createChatConfig = (
   -Ask:
   --What are their preferred travel dates or timeframe?
   
+  --Messages are 320 characters long maximum.
   `;
 
   // For every destination or travel plan we explore, You'll always provide:

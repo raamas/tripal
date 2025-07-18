@@ -4,25 +4,15 @@ import MessageBox from "@/components/MessageBox";
 import ChatInput from "@/components/chat/Input";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
+import { Message } from "@/lib/utils";
+import { ChatHistoryMessage } from "@/lib/utils";
 
-interface Message {
-  id: number;
-  type: "modelResponse" | "userPrompt";
-  text: string;
-}
 export default function Chat() {
   const [messageHistory, setMessages] = useState<Message[]>([]);
   const [userPrompt, setUserPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const supabase = createClient();
-
-  interface Part {
-    text: string;
-  }
-  interface ChatHistory {
-    role: "user" | "model";
-    parts: Part[];
-  }
+  const [error, setError] = useState<string>();
 
   useEffect(() => {
     const getMessageHistory = async () => {
@@ -30,10 +20,13 @@ export default function Chat() {
         error: userError,
         data: { user },
       } = await supabase.auth.getUser();
+
       if (userError || !user) {
         console.log("Error getting user object: ", userError);
+        setError("Something went wrong. Try again later");
         return;
       }
+
       const { error: chatsError, data } = await supabase
         .from("user_chats")
         .select("raw_chat_history")
@@ -42,16 +35,17 @@ export default function Chat() {
 
       if (chatsError) {
         console.log("Error getting user's chat history: ", chatsError);
+        setError("Something went wrong. Try again later");
         return;
       }
 
-      const raw_chat_history = data?.raw_chat_history;
+      const raw_chat_history = data ? data.raw_chat_history : [];
       const newChatHistory: Message[] = [];
 
       console.log(raw_chat_history);
 
-      raw_chat_history.forEach((element: ChatHistory, index: number) => {
-        if (index != 0 && index != 1) {
+      raw_chat_history.forEach((element: ChatHistoryMessage, index: number) => {
+        if (true) {
           newChatHistory.push({
             id: newChatHistory.length,
             text: element.parts[0].text,
@@ -61,6 +55,7 @@ export default function Chat() {
       });
 
       setMessages(newChatHistory);
+      console.log(messageHistory);
     };
 
     getMessageHistory();
@@ -133,8 +128,8 @@ export default function Chat() {
             {m.text}
           </MessageBox>
         ))}
+        {error && <p>{error}</p>}
       </div>
-
       {/* <ChatContainer /> */}
       <div className="chat-container w-full fixed bottom-0 p-2 pb-4">
         {!loading && messageHistory.length === 0 && userPrompt === "" && (
