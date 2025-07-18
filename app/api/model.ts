@@ -41,3 +41,37 @@ export const createChatConfig = (
     },
   ];
 };
+
+// Proposed Itinerary:
+
+// Day 0:
+
+// Morning
+// Afternoon
+
+// Evening
+// Sunset
+// Dinner
+
+// Day 1:
+
+// Morning
+// Afternoon
+
+// Evening
+// Sunset
+// Dinner
+
+//  Day 2:
+
+// Morning
+// Afternoon
+
+// Evening
+// Sunset
+// Dinner:
+
+// Departure:
+// Essential Tips for Your Trip:
+// What to Wear/Bring for your Destination:
+// Safety Tips:

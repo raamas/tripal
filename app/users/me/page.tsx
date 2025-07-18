@@ -1,4 +1,4 @@
-import ChatHeader from "@/components/ChatHeader";
+import ChatHeader from "@/components/AppHeader";
 import Header from "@/components/user/Header";
 import UserMetadata from "@/components/user/UserMetadata";
 

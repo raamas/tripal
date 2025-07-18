@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import MessageBox from "@/components/MessageBox";
-import ChatInput from "@/components/ChatInput";
+import ChatInput from "@/components/chat/Input";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/utils/supabase/client";
 
