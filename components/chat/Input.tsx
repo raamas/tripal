@@ -7,13 +7,17 @@ import { ArrowUp, LoaderCircle } from "lucide-react";
 
 export default function ChatInput({
   handleSubmit,
-  userPrompt,
-  setUserPrompt,
+  inputValue,
+  handleInputChange,
   loading,
 }: {
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  userPrompt: string;
-  setUserPrompt: (value: string) => void;
+  inputValue: string;
+  handleInputChange: (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+  ) => void;
   loading: boolean;
 }) {
   return (
@@ -25,9 +29,9 @@ export default function ChatInput({
         <Input
           type="text"
           placeholder="Plan my next trip to..."
-          value={userPrompt}
+          value={inputValue}
           name="userPrompt"
-          onChange={(e) => setUserPrompt(e.target.value)}
+          onChange={handleInputChange}
           className="border-none focus-visible:ring-transparent "
         />
 
