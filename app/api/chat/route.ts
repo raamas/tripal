@@ -9,7 +9,7 @@ import * as chrono from "chrono-node";
 
 const AmadeusAPI = new AmadeusClass(
   process.env.AMADEUS_KEY!,
-  process.env.AMADEUS_CLIENT!
+  process.env.AMADEUS_SECRET!
 );
 
 async function getUserChatHistory(
@@ -143,7 +143,11 @@ export async function POST(request: Request) {
       findCityHotels: tool({
         description: "find the list of hotels in a city",
         parameters: z.object({
-          cityCode: z.string().describe("city's 3-character IATA code"),
+          cityCode: z
+            .string()
+            .describe(
+              "city's 3-character IATA code. usually it's the same as the airport code"
+            ),
         }),
         execute: async ({ cityCode }) => {
           const data = await AmadeusAPI.getHotelsList(cityCode);

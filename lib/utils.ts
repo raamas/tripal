@@ -25,6 +25,7 @@ export class AmadeusClass {
     this.key = key;
     this.secret = secret;
   }
+
   async getAccessToken() {
     const tokenHeaders = new Headers();
     tokenHeaders.append("content-type", "application/x-www-form-urlencoded");
@@ -39,7 +40,14 @@ export class AmadeusClass {
     );
 
     const data = await responseToken.json();
-    return `${data.token_type} ${data.access_token}`;
+    if (!data.access_token) {
+      // console.log("Error ");
+      return {
+        error: new Error("Could not generate access token"),
+        token: null,
+      };
+    }
+    return { error: null, token: `${data.token_type} ${data.access_token}` };
   }
 
   async getFlights({
@@ -57,7 +65,11 @@ export class AmadeusClass {
     destination: destination location airport's IATA code
     date: departure date in YYYY-MM-DD format
     */
-    const token = await this.getAccessToken(); // `${data.token_type} ${data.access_token}`;
+    const { token, error } = await this.getAccessToken(); // `${data.token_type} ${data.access_token}`;
+    if (error) {
+      console.log("Could not get API access token");
+      return;
+    }
 
     const searchHeaders = new Headers();
     searchHeaders.append("Authorization", token);
@@ -74,8 +86,11 @@ export class AmadeusClass {
     return searchResults.data;
   }
   async getHotelsList(cityCode: string) {
-    const token = await this.getAccessToken();
-
+    const { token, error } = await this.getAccessToken();
+    if (error) {
+      console.log("Could not get API access token");
+      return;
+    }
     const searchHeaders = new Headers();
     searchHeaders.append("Authorization", token);
 
@@ -93,8 +108,11 @@ export class AmadeusClass {
   }
 
   async getHotelOffer(hotelId: string) {
-    const token = await this.getAccessToken();
-
+    const { token, error } = await this.getAccessToken();
+    if (error) {
+      console.log("Could not get API access token");
+      return;
+    }
     const searchHeaders = new Headers();
     searchHeaders.append("Authorization", token);
 
@@ -107,6 +125,14 @@ export class AmadeusClass {
     const searchResults = await searchResponse.json();
     console.log(searchResults);
 
+    if (
+      searchResults.data.errors &&
+      searchResults.data.errors[0].code === 3664
+    ) {
+      return {
+        result: "no rooms",
+      };
+    }
     return searchResults.data;
   }
 }
