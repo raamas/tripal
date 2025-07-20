@@ -1,10 +1,5 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-const Amadeus = require("amadeus");
-export const amadeus = new Amadeus({
-  clientId: process.env.NEXT_PUBLIC_AMADEUS_KEY,
-  clientSecret: process.env.NEXT_PUBLIC_AMADEUS_SECRET,
-});
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -22,7 +17,14 @@ export interface ChatHistoryMessage {
   content: string;
 }
 
-class AmadeusClass {
+export class AmadeusClass {
+  private key: string;
+  private secret: string;
+
+  constructor(key: string, secret: string) {
+    this.key = key;
+    this.secret = secret;
+  }
   async getAccessToken() {
     const tokenHeaders = new Headers();
     tokenHeaders.append("content-type", "application/x-www-form-urlencoded");
@@ -32,7 +34,7 @@ class AmadeusClass {
       {
         method: "POST",
         headers: tokenHeaders,
-        body: `grant_type=client_credentials&client_id=${process.env.AMADEUS_KEY}&client_secret=${process.env.AMADEUS_SECRET}`,
+        body: `grant_type=client_credentials&client_id=${this.key}&client_secret=${this.secret}`,
       }
     );
 
@@ -108,5 +110,3 @@ class AmadeusClass {
     return searchResults.data;
   }
 }
-
-export const AmadeusAPI = new AmadeusClass();

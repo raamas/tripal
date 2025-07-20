@@ -1,11 +1,16 @@
 import { createClient } from "@/utils/supabase/server";
 import { createChatConfig } from "@/app/api/model";
 import { ChatHistoryMessage } from "@/lib/utils";
-import { AmadeusAPI } from "@/lib/utils";
+import { AmadeusClass } from "@/lib/utils";
 import { streamText, tool } from "ai";
 import { google } from "@ai-sdk/google";
 import z from "zod";
 import * as chrono from "chrono-node";
+
+const AmadeusAPI = new AmadeusClass(
+  process.env.AMADEUS_KEY!,
+  process.env.AMADEUS_CLIENT!
+);
 
 async function getUserChatHistory(
   userId: string
