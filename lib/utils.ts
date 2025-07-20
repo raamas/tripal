@@ -32,7 +32,7 @@ class AmadeusClass {
       {
         method: "POST",
         headers: tokenHeaders,
-        body: `grant_type=client_credentials&client_id=${process.env.NEXT_PUBLIC_AMADEUS_KEY}&client_secret=${process.env.NEXT_PUBLIC_AMADEUS_SECRET}`,
+        body: `grant_type=client_credentials&client_id=${process.env.AMADEUS_KEY}&client_secret=${process.env.AMADEUS_SECRET}`,
       }
     );
 
