@@ -4,17 +4,14 @@ import { Card, CardContent } from "./ui/card";
 export default function MessageBox({
   children,
   type,
-  loading,
 }: // className,
 {
   children: React.ReactNode;
-  type: "userPrompt" | "modelResponse";
-  loading: boolean;
+  type: "user" | "assistant" | "system" | "data";
 }) {
-  const loadingStyles = loading && " animate-pulse ";
   const typeClassname =
-    type == "modelResponse"
-      ? " self-start p-2 w-full " + loadingStyles
+    type == "assistant"
+      ? " self-start p-2 w-full "
       : " self-end font-light bg-blue-700 border-xs shadow-sm/10 border-blue00 text-neutral-100 ";
 
   return (

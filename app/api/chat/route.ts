@@ -1,11 +1,15 @@
 import { createClient } from "@/utils/supabase/server";
 import { createChatConfig } from "@/app/api/model";
-import { GoogleGenAI } from "@google/genai";
-import { Message, ChatHistoryMessage } from "@/lib/utils";
+import { ChatHistoryMessage } from "@/lib/utils";
+import { AmadeusAPI } from "@/lib/utils";
+import { streamText, tool } from "ai";
+import { google } from "@ai-sdk/google";
+import z from "zod";
+import * as chrono from "chrono-node";
 
 async function getUserChatHistory(
   userId: string
-): Promise<ChatHistoryMessage[] | null> {
+): Promise<ChatHistoryMessage[] | never[]> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -15,21 +19,23 @@ async function getUserChatHistory(
     .single();
 
   if (error) {
-    return null;
+    return [];
   }
+
   return data.raw_chat_history;
 }
 
 async function updateUserChatHistory(
   userId: string,
-  prevHistory: Message[]
+  newHistory: ChatHistoryMessage[],
+  prevHistory: ChatHistoryMessage[]
 ): Promise<null | string> {
   const supabase = await createClient();
 
   if (!prevHistory) {
     const { error: updateError, data } = await supabase
       .from("user_chats")
-      .insert({ user_id: userId, raw_chat_history: history })
+      .insert({ user_id: userId, raw_chat_history: newHistory })
       .select()
       .single();
 
@@ -44,7 +50,7 @@ async function updateUserChatHistory(
   } else {
     const { error: updateError, data } = await supabase
       .from("user_chats")
-      .update({ raw_chat_history: history })
+      .update({ raw_chat_history: newHistory })
       .eq("user_id", userId)
       .select()
       .single();
@@ -60,53 +66,101 @@ async function updateUserChatHistory(
   }
 }
 
+export const maxDuration = 30;
 export async function POST(request: Request) {
-  const { prompt } = await request.json();
+  const { messages } = await request.json();
   const supabase = await createClient();
 
   const {
     data: { user },
-    error,
+    error: userError,
   } = await supabase.auth.getUser();
 
-  if (error || !user) {
-    console.log("Error getting user object (api/chat)");
-    return Response.json(error);
+  if (userError || !user) {
+    console.log("Error getting user object. location: api/chat.");
+    console.log(userError?.message);
+    return Response.json(userError);
   }
 
-  const { error: chatHistoryError, data: chatHistory } = await supabase
-    .from("user_chats")
-    .select("raw_chat_history")
-    .maybeSingle();
+  let userHistory = await getUserChatHistory(user.id);
+  userHistory = [...userHistory, ...messages];
+  const { name, city, budget, likes } = await user.user_metadata;
 
-  if (error) {
-    console.log("Error getting user's chat history: ", chatHistoryError);
-    return Response.json(chatHistoryError);
-  }
-
-  //
-
-  const { name, city, budget, likes } = user.user_metadata;
-
-  const config = chatHistory
-    ? await getUserChatHistory(user.id)
-    : createChatConfig(name, city, budget, likes);
-
-  const Gemini = new GoogleGenAI({});
-  const GeminiChat = Gemini.chats.create({
-    model: "gemini-2.5-flash",
-    history: config as ChatHistoryMessage[],
+  const result = await streamText({
+    system: createChatConfig(name, city, budget, likes),
+    model: google("gemini-2.5-flash"),
+    messages,
+    tools: {
+      formatDates: tool({
+        description: "turn loosely provided dates to specific date string",
+        parameters: z.object({
+          date: z.string().describe("date of traveling in english"),
+        }),
+        execute: async ({ date }) => {
+          const formatDate = chrono.parseDate(date);
+          return formatDate?.toISOString().slice(0, 10);
+        },
+      }),
+      findFlights: tool({
+        description: "Find flight prices in USD to a locations",
+        parameters: z.object({
+          origin: z.string().describe("Airport code for the origin location"),
+          destination: z.string().describe("Destination's main airport's code"),
+          date: z
+            .string()
+            .describe(
+              "the estimated departure date turned to a specific date in YYYY-MM-DD format"
+            ),
+        }),
+        execute: async ({ origin, destination, date }) => {
+          const data = await AmadeusAPI.getFlights({
+            origin,
+            destination,
+            date,
+          });
+          return {
+            data,
+          };
+        },
+      }),
+      updateBudget: tool({
+        description: "keep the budget up-to-date with the decisions made",
+        parameters: z.object({
+          update: z
+            .number()
+            .describe("the update to apply to the budget i.e. +500, -900"),
+          budget: z.number().describe("user's current budget"),
+        }),
+        execute: async ({ update, budget }) => {
+          return eval(`${budget} ${update}`);
+        },
+      }),
+      findCityHotels: tool({
+        description: "find the list of hotels in a city",
+        parameters: z.object({
+          cityCode: z.string().describe("city's 3-character IATA code"),
+        }),
+        execute: async ({ cityCode }) => {
+          const data = await AmadeusAPI.getHotelsList(cityCode);
+          return {
+            data,
+          };
+        },
+      }),
+      getHotelOffer: tool({
+        description: "find the hotel's acommodation offer",
+        parameters: z.object({
+          hotelId: z.string().describe("hotel's amadeus id"),
+        }),
+        execute: async ({ hotelId }) => {
+          const data = await AmadeusAPI.getHotelOffer(hotelId);
+          return {
+            data,
+          };
+        },
+      }),
+    },
   });
 
-  const response = await GeminiChat.sendMessage({
-    message: prompt,
-  });
-
-  const history = GeminiChat.getHistory();
-
-  return Response.json({
-    status: "200",
-    modelResponse: response.text,
-    history: history,
-  });
+  return result.toDataStreamResponse();
 }
