@@ -1,11 +1,12 @@
 import { Header } from "@/components/header";
 import Link from "next/link";
 
-export default function PaymentSucces({
-  searchParams: { amount },
+export default async function PaymentSucces({
+  searchParams,
 }: {
-  searchParams: { amount: number };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const { amount } = await searchParams;
   return (
     <div className="min-h-screen bg-white">
       <Header />
