@@ -12,7 +12,7 @@ export default function Payment() {
   const plans = [
     {
       id: 0,
-      title: "anual",
+      title: "Annual",
       price: 10,
       description: `✈️ Annual Plan – For the Frequent Explorer
 Unlimited AI-generated itineraries all year
@@ -31,7 +31,7 @@ One payment, a year of smarter travel.`,
     },
     {
       id: 1,
-      title: "monthly",
+      title: "Monthly",
       price: 1,
       description: `.
 
@@ -57,35 +57,19 @@ Perfect for short-term trips or spontaneous getaways.`,
 
   const copy = {
     heading: "Unlock Smarter Travel with Tripal",
-    desc: `Let AI craft your perfect trip - from custom itineraries to real-time updates.\n
-Subscribe now for priority access to:\n
-✅ Personalized travel plans\n
-✅ Instant booking options\n
-✅ 24/7 AI-powered support\n
-✅ Exclusive travel deals\n
-
-Your next adventure starts here.\n
-
-[Subscribe Now]`,
   };
 
   return (
     <div className="min-h-screen bg-white flex flex-col w-full text-center p-6 ">
       <h2 className="text-4xl font-bold m-8 text-blue-800">{copy.heading}</h2>
-      <p className="mb-12 mx-12">
-        {copy.desc.split("\n").map((line, index) => (
-          <React.Fragment key={index}>
-            {line}
-            {index < copy.desc.split("\n").length - 1 && <br />}{" "}
-            {/* Add <br /> for all but the last line */}
-          </React.Fragment>
-        ))}
-      </p>
 
-      <div className="w-full flex flex-col md:flex-row items-center justify-center p-4 gap-4">
+      <div className="w-full flex flex-col md:flex-row items-center justify-center p-2 gap-4">
         {plans.map((p, i) => (
           <Card
-            className="w-full flex flex-col hover:cursor-pointer"
+            className={
+              "w-full flex flex-col hover:cursor-pointer md:min-h-[70vh] overflow-hidden justify-around " +
+              (p.id == plan.id && " border-4 border-blue-700")
+            }
             key={i}
             role="button"
             onClick={() => setPlan(plans[i])}
@@ -98,8 +82,12 @@ Your next adventure starts here.\n
               {p.title}
             </CardHeader>
             <CardContent className="flex flex-col">
-              <h3>${p.price} USD / Month</h3>
-              <p className={p.id == plan.id ? "block" : "hidden"}>
+              <h3 className="font-semibold">
+                ${p.price} USD / {p.title === "Annual" ? "year" : "month"}
+              </h3>
+              <p
+                className={"md:block " + (p.id == plan.id ? "block" : "hidden")}
+              >
                 {p.description.split("\n").map((line, index) => (
                   <React.Fragment key={index}>
                     {line}
@@ -110,25 +98,22 @@ Your next adventure starts here.\n
                   </React.Fragment>
                 ))}
               </p>
-              {p.id == plan.id && (
-                <p className="text-blue-700 font-bold text-sm mt-2">
-                  You chose {p.title}
-                </p>
-              )}
             </CardContent>
           </Card>
         ))}
       </div>
-      <Elements
-        stripe={stripePromise}
-        options={{
-          mode: "payment",
-          amount: Math.round(plan.price * 100),
-          currency: "usd",
-        }}
-      >
-        <CheckoutPage amount={plan.price} />
-      </Elements>
+      {plan && (
+        <Elements
+          stripe={stripePromise}
+          options={{
+            mode: "payment",
+            amount: Math.round(plan.price * 100),
+            currency: "usd",
+          }}
+        >
+          <CheckoutPage amount={plan.price} />
+        </Elements>
+      )}
     </div>
   );
 }
