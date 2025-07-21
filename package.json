@@ -13,6 +13,8 @@
     "@ai-sdk/react": "^1.2.12",
     "@google/genai": "^1.8.0",
     "@radix-ui/themes": "^3.2.1",
+    "@stripe/react-stripe-js": "^3.7.0",
+    "@stripe/stripe-js": "^7.5.0",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.50.3",
     "ai": "^4.3.19",
@@ -28,6 +30,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-markdown": "^10.1.0",
+    "stripe": "^18.3.0",
     "tailwind-merge": "^3.3.1",
     "uuid": "^11.1.0",
     "zod": "^3.25.76"
