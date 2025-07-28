@@ -57,12 +57,15 @@ export default function CheckoutPage({ amount }: { amount: number }) {
     }
   };
   return (
-    <div className="w-full flex items-center justify-center px-4">
+    <div className="w-full flex items-center justify-center">
       <form onSubmit={handleSubmit} className="w-full">
+        {!errorMessage && !clientSecret && (
+          <p className="animate-pulse font-bold text-blue-800">Loading...</p>
+        )}
         {clientSecret && <PaymentElement />}
         {errorMessage && <p>{errorMessage}</p>}
         <Button className="w-full bg-blue-800 hover:bg-blue-950 mt-4">
-          Pay ${amount} USD / Month
+          Pay ${amount} USD
         </Button>
       </form>
     </div>

@@ -1,3 +1,4 @@
+"use client";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "./ui/button";
 import { redirect } from "next/navigation";
@@ -10,7 +11,7 @@ export default function SignOut() {
       console.log("Error signing user out: ", error);
       return;
     }
-    redirect("welcome");
+    redirect("/welcome");
     // console.log("sucesss");
   };
 

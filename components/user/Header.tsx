@@ -1,28 +1,17 @@
-"use client";
-import { useEffect, useState } from "react";
+"use server";
 import SignOut from "@/components/Signout";
-import { createClient } from "@/utils/supabase/client";
+import { getUserMetadata } from "@/lib/utils";
+import { createClient } from "@/utils/supabase/server";
 import { User } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 
-export default function Header() {
-  const supabase = createClient();
-  const [user, setUser] = useState<User>();
-
-  useEffect(() => {
-    const getUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (error) {
-        console.log("Error getting the user object. (app/users/me)");
-        redirect("/welcome");
-        return error;
-      }
-
-      setUser(data.user);
-    };
-
-    getUser();
-  }, []);
+export default async function Header() {
+  const supabase = await createClient();
+  const { user, error } = await getUserMetadata(supabase);
+  if (error) {
+    console.log("Error getting the user object. (app/users/me)");
+    redirect("/welcome");
+  }
 
   return (
     <section
@@ -31,13 +20,13 @@ export default function Header() {
     >
       <div className="w-2/3">
         <h2 className="text-xl font-semibold">
-          {user && user.user_metadata ? user?.user_metadata?.name : "No user"}
+          {user ? user.name : "No user"}
         </h2>
         <SignOut />
       </div>
 
       <img
-        src={user?.user_metadata.avatar_url}
+        src={user?.avatar_url}
         alt="profile_image"
         className="rounded-full"
         width="48px"

@@ -1,30 +1,12 @@
-"use client";
+"use server";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { useState, useEffect } from "react";
-import { createClient } from "@/utils/supabase/client";
-import { User } from "@supabase/supabase-js";
+import { createClient } from "@/utils/supabase/server";
+import { getSession } from "@/lib/utils";
 
-export function Header() {
-  const [user, setUser] = useState<User>();
-  const supabase = createClient();
-
-  useEffect(() => {
-    const getUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (error) {
-        console.log(
-          "Error getting user object (/welcome header): ",
-          error.message
-        );
-        return error;
-      }
-      setUser(data.user);
-      console.log(data.user);
-      return user;
-    };
-    getUser();
-  }, []);
+export default async function Header() {
+  const supabase = await createClient();
+  const isLoggedIn = await getSession(supabase);
 
   return (
     <header className="border-b border-gray-100">
@@ -38,17 +20,17 @@ export function Header() {
               <Link href="#" className="text-gray-600 hover:text-gray-900">
                 Features
               </Link>
-              <Link href="#" className="text-gray-600 hover:text-gray-900">
+              <Link href="/plans" className="text-gray-600 hover:text-gray-900">
                 Pricing
               </Link>
             </nav>
           </div>
           <div className="flex items-center space-x-4">
             <Link href="/signin" className="text-gray-600 hover:text-gray-900">
-              {!user && "Sign in"}
+              {!isLoggedIn && "Sign in"}
             </Link>
             <Button className="bg-blue-800 hover:bg-blue-900 text-white">
-              {user ? (
+              {isLoggedIn ? (
                 <Link href="/chat">Start Chat</Link>
               ) : (
                 <Link href="/signin">Get Started</Link>

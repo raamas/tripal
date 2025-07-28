@@ -10,13 +10,16 @@ export default function UserMetadata() {
 
   useEffect(() => {
     const getUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (error) {
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+      if (error || !session) {
         console.log("Error getting the user object. (app/users/me)");
         return error;
       }
 
-      setUser(data.user);
+      setUser(session!.user);
 
       return user;
     };

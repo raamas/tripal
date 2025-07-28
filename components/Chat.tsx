@@ -12,8 +12,6 @@ export default function Chat() {
     maxSteps: 5,
   });
 
-  console.log(messages);
-
   return (
     <div className="flex justify-center">
       {/* <Messages /> */}

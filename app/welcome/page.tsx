@@ -1,8 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
 import { Star, MapPin, Plane, Calendar } from "lucide-react";
-import { Header } from "@/components/header";
-import { HeroSection } from "@/components/hero-section";
+import Header from "@/components/header";
+import HeroSection from "@/components/hero-section";
 import ButtonCTA from "@/components/ButtonCTA";
 
 export default async function LandingPage() {
