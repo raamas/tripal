@@ -4,10 +4,12 @@ import { Card, CardContent } from "./ui/card";
 export default function MessageBox({
   children,
   type,
+  className,
 }: // className,
 {
   children: React.ReactNode;
   type: "user" | "assistant" | "system" | "data";
+  className?: string;
 }) {
   const typeClassname =
     type == "assistant"
@@ -17,7 +19,9 @@ export default function MessageBox({
   return (
     <Card
       className={
-        "px-2 max-w-md block rounded-xl my-2 flex-center  " + typeClassname
+        className +
+        " px-2 max-w-md block rounded-xl my-2 flex-center " +
+        typeClassname
       }
     >
       <CardContent className="message-content p-2 ">

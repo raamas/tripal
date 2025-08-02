@@ -1,13 +1,13 @@
 import { createClient } from "@/utils/supabase/server";
 import { createChatConfig } from "@/app/api/model";
 import { ChatHistoryMessage } from "@/lib/utils";
-import { AmadeusClass } from "@/lib/utils";
+import { AmadeusClient } from "amadeusnode";
 import { streamText, tool } from "ai";
 import { google } from "@ai-sdk/google";
 import z from "zod";
 import * as chrono from "chrono-node";
 
-const AmadeusAPI = new AmadeusClass(
+const AmadeusAPI = new AmadeusClient(
   process.env.AMADEUS_KEY!,
   process.env.AMADEUS_SECRET!
 );
@@ -118,11 +118,11 @@ export async function POST(request: Request) {
             ),
         }),
         execute: async ({ origin, destination, date }) => {
-          const data = await AmadeusAPI.getFlights({
+          const data = await AmadeusAPI.getFlightOffers(
             origin,
             destination,
-            date,
-          });
+            date
+          );
           return {
             data,
           };
@@ -150,7 +150,7 @@ export async function POST(request: Request) {
             ),
         }),
         execute: async ({ cityCode }) => {
-          const data = await AmadeusAPI.getHotelsList(cityCode);
+          const data = await AmadeusAPI.getHotelsByCity(cityCode);
           return {
             data,
           };
@@ -162,10 +162,12 @@ export async function POST(request: Request) {
           hotelId: z.string().describe("hotel's amadeus id"),
         }),
         execute: async ({ hotelId }) => {
-          const data = await AmadeusAPI.getHotelOffer(hotelId);
-          return {
-            data,
-          };
+          const data = await AmadeusAPI.getHotelOffers([hotelId]);
+          console.log(data.data.offers);
+          if (data.data)
+            return {
+              data: data.data.offers,
+            };
         },
       }),
     },

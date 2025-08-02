@@ -19,6 +19,7 @@
     "@supabase/supabase-js": "^2.50.3",
     "ai": "^4.3.19",
     "amadeus": "^11.0.0",
+    "amadeusnode": "^0.0.3",
     "chrono-node": "^2.8.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",

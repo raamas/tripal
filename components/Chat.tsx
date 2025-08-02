@@ -26,12 +26,12 @@ export default function Chat() {
                       {part.text}
                     </MessageBox>
                   );
-                // case "tool-invocation":
-                //   return (
-                //     <pre key={`${m.id}-${i}`}>
-                //       {JSON.stringify(part.toolInvocation, null, 2)}
-                //     </pre>
-                //   );
+                case "tool-invocation":
+                  return (
+                    <pre key={`${m.id}-${i}`}>
+                      {JSON.stringify(part.toolInvocation, null, 2)}
+                    </pre>
+                  );
               }
             })}
           </span>
