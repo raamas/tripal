@@ -11,70 +11,9 @@ const AmadeusAPI = new AmadeusClient(
   process.env.AMADEUS_KEY!,
   process.env.AMADEUS_SECRET!
 );
-
-async function getUserChatHistory(
-  userId: string
-): Promise<ChatHistoryMessage[] | never[]> {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("user_chats")
-    .select("raw_chat_history")
-    .eq("user_id", userId)
-    .single();
-
-  if (error) {
-    return [];
-  }
-
-  return data.raw_chat_history;
-}
-
-async function updateUserChatHistory(
-  userId: string,
-  newHistory: ChatHistoryMessage[],
-  prevHistory: ChatHistoryMessage[]
-): Promise<null | string> {
-  const supabase = await createClient();
-
-  if (!prevHistory) {
-    const { error: updateError, data } = await supabase
-      .from("user_chats")
-      .insert({ user_id: userId, raw_chat_history: newHistory })
-      .select()
-      .single();
-
-    if (updateError) {
-      console.log(
-        "Error updating user chat history (app/api/chat: insert): ",
-        updateError
-      );
-      return updateError.message;
-    }
-    return null;
-  } else {
-    const { error: updateError, data } = await supabase
-      .from("user_chats")
-      .update({ raw_chat_history: newHistory })
-      .eq("user_id", userId)
-      .select()
-      .single();
-
-    if (updateError) {
-      console.log(
-        "Error updating user chat history (app/api/chat: update): ",
-        updateError
-      );
-      return updateError.message;
-    }
-    return null;
-  }
-}
-
 export const maxDuration = 15;
 export async function POST(request: Request) {
-  const { messages } = await request.json();
-  console.log(">>>>>>>>>>>>>> messages: ", messages);
+  const { messages, mode } = await request.json();
   const supabase = await createClient();
 
   const {
@@ -89,9 +28,10 @@ export async function POST(request: Request) {
   }
 
   const { name, city, budget, likes } = await user.user_metadata;
+  const config = createChatConfig(mode, name, city, budget, likes);
 
   const result = await streamText({
-    system: createChatConfig(name, city, budget, likes),
+    system: config,
     model: google("gemini-2.5-flash"),
     messages,
     tools: {
@@ -179,6 +119,5 @@ export async function POST(request: Request) {
     },
   });
 
-  console.log(">>>>>>>>>>>>>>> result: ", result);
   return result.toDataStreamResponse();
 }
