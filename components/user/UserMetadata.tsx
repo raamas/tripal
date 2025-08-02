@@ -48,9 +48,9 @@ export default function UserMetadata() {
 
           <div>
             <p className="font-light">Your interests:</p>
-            {user.user_metadata.likes.map((l: string) => {
-              <h3 className="text-lg text-blue-800">{l}</h3>;
-            })}
+            {user.user_metadata.likes.map((l: string) => (
+              <h3 className="text-lg text-blue-800">{l}</h3>
+            ))}
           </div>
         </div>
       )}
