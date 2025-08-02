@@ -71,9 +71,10 @@ async function updateUserChatHistory(
   }
 }
 
-export const maxDuration = 30;
+export const maxDuration = 15;
 export async function POST(request: Request) {
   const { messages } = await request.json();
+  console.log(">>>>>>>>>>>>>> messages: ", messages);
   const supabase = await createClient();
 
   const {
@@ -87,8 +88,6 @@ export async function POST(request: Request) {
     return Response.json(userError);
   }
 
-  let userHistory = await getUserChatHistory(user.id);
-  userHistory = [...userHistory, ...messages];
   const { name, city, budget, likes } = await user.user_metadata;
 
   const result = await streamText({
@@ -163,15 +162,23 @@ export async function POST(request: Request) {
         }),
         execute: async ({ hotelId }) => {
           const data = await AmadeusAPI.getHotelOffers([hotelId]);
-          console.log(data.data.offers);
-          if (data.data)
+          if (data.data) {
+            console.log(data);
             return {
               data: data.data.offers,
             };
+          } else {
+            console.log(data);
+
+            return {
+              data: data,
+            };
+          }
         },
       }),
     },
   });
 
+  console.log(">>>>>>>>>>>>>>> result: ", result);
   return result.toDataStreamResponse();
 }

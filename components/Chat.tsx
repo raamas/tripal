@@ -27,11 +27,7 @@ export default function Chat() {
                     </MessageBox>
                   );
                 case "tool-invocation":
-                  return (
-                    <pre key={`${m.id}-${i}`}>
-                      {JSON.stringify(part.toolInvocation, null, 2)}
-                    </pre>
-                  );
+                  return <p key={`${m.id}-${i}`}>Loading...</p>;
               }
             })}
           </span>
