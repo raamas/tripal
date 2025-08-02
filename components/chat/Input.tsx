@@ -20,7 +20,7 @@ export default function ChatInput({
       | React.ChangeEvent<HTMLTextAreaElement>
   ) => void;
   loading: boolean;
-  error: Error | undefined;
+  error?: Error | undefined;
 }) {
   return (
     <form onSubmit={handleSubmit} className="w-full">
