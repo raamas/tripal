@@ -17,8 +17,8 @@ export default async function Header() {
               TRIPAL
             </div>
             <nav className="hidden md:flex items-center space-x-6">
-              <Link href="#" className="text-gray-600 hover:text-gray-900">
-                Features
+              <Link href="/demo" className="text-gray-600 hover:text-gray-900">
+                Demo
               </Link>
               <Link href="/plans" className="text-gray-600 hover:text-gray-900">
                 Pricing
