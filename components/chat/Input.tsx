@@ -10,6 +10,7 @@ export default function ChatInput({
   inputValue,
   handleInputChange,
   loading,
+  error,
 }: {
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   inputValue: string;
@@ -19,6 +20,7 @@ export default function ChatInput({
       | React.ChangeEvent<HTMLTextAreaElement>
   ) => void;
   loading: boolean;
+  error?: Error | undefined;
 }) {
   return (
     <form onSubmit={handleSubmit} className="w-full">
@@ -33,6 +35,8 @@ export default function ChatInput({
           name="userPrompt"
           onChange={handleInputChange}
           className="border-none focus-visible:ring-transparent "
+          autoFocus
+          disabled={error != null}
         />
 
         {loading ? (

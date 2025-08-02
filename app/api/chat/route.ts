@@ -1,79 +1,19 @@
 import { createClient } from "@/utils/supabase/server";
 import { createChatConfig } from "@/app/api/model";
 import { ChatHistoryMessage } from "@/lib/utils";
-import { AmadeusClass } from "@/lib/utils";
+import { AmadeusClient } from "amadeusnode";
 import { streamText, tool } from "ai";
 import { google } from "@ai-sdk/google";
 import z from "zod";
 import * as chrono from "chrono-node";
 
-const AmadeusAPI = new AmadeusClass(
+const AmadeusAPI = new AmadeusClient(
   process.env.AMADEUS_KEY!,
   process.env.AMADEUS_SECRET!
 );
-
-async function getUserChatHistory(
-  userId: string
-): Promise<ChatHistoryMessage[] | never[]> {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("user_chats")
-    .select("raw_chat_history")
-    .eq("user_id", userId)
-    .single();
-
-  if (error) {
-    return [];
-  }
-
-  return data.raw_chat_history;
-}
-
-async function updateUserChatHistory(
-  userId: string,
-  newHistory: ChatHistoryMessage[],
-  prevHistory: ChatHistoryMessage[]
-): Promise<null | string> {
-  const supabase = await createClient();
-
-  if (!prevHistory) {
-    const { error: updateError, data } = await supabase
-      .from("user_chats")
-      .insert({ user_id: userId, raw_chat_history: newHistory })
-      .select()
-      .single();
-
-    if (updateError) {
-      console.log(
-        "Error updating user chat history (app/api/chat: insert): ",
-        updateError
-      );
-      return updateError.message;
-    }
-    return null;
-  } else {
-    const { error: updateError, data } = await supabase
-      .from("user_chats")
-      .update({ raw_chat_history: newHistory })
-      .eq("user_id", userId)
-      .select()
-      .single();
-
-    if (updateError) {
-      console.log(
-        "Error updating user chat history (app/api/chat: update): ",
-        updateError
-      );
-      return updateError.message;
-    }
-    return null;
-  }
-}
-
-export const maxDuration = 30;
+export const maxDuration = 15;
 export async function POST(request: Request) {
-  const { messages } = await request.json();
+  const { messages, mode } = await request.json();
   const supabase = await createClient();
 
   const {
@@ -87,12 +27,11 @@ export async function POST(request: Request) {
     return Response.json(userError);
   }
 
-  let userHistory = await getUserChatHistory(user.id);
-  userHistory = [...userHistory, ...messages];
   const { name, city, budget, likes } = await user.user_metadata;
+  const config = createChatConfig(mode, name, city, budget, likes);
 
   const result = await streamText({
-    system: createChatConfig(name, city, budget, likes),
+    system: config,
     model: google("gemini-2.5-flash"),
     messages,
     tools: {
@@ -118,11 +57,11 @@ export async function POST(request: Request) {
             ),
         }),
         execute: async ({ origin, destination, date }) => {
-          const data = await AmadeusAPI.getFlights({
+          const data = await AmadeusAPI.getFlightOffers(
             origin,
             destination,
-            date,
-          });
+            date
+          );
           return {
             data,
           };
@@ -150,7 +89,7 @@ export async function POST(request: Request) {
             ),
         }),
         execute: async ({ cityCode }) => {
-          const data = await AmadeusAPI.getHotelsList(cityCode);
+          const data = await AmadeusAPI.getHotelsByCity(cityCode);
           return {
             data,
           };
@@ -162,10 +101,19 @@ export async function POST(request: Request) {
           hotelId: z.string().describe("hotel's amadeus id"),
         }),
         execute: async ({ hotelId }) => {
-          const data = await AmadeusAPI.getHotelOffer(hotelId);
-          return {
-            data,
-          };
+          const data = await AmadeusAPI.getHotelOffers([hotelId]);
+          if (data.data) {
+            console.log(data);
+            return {
+              data: data.data.offers,
+            };
+          } else {
+            console.log(data);
+
+            return {
+              data: data,
+            };
+          }
         },
       }),
     },

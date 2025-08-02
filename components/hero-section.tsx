@@ -1,31 +1,14 @@
-"use client";
+"use server";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Badge } from "lucide-react";
-import { createClient } from "@/utils/supabase/client";
-import { User } from "@supabase/supabase-js";
-import { useState, useEffect } from "react";
+import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
+import { getSession } from "@/lib/utils";
 
-export function HeroSection() {
-  const supabase = createClient();
-  const [user, setUser] = useState<User>();
+export default async function HeroSection() {
+  const supabase = await createClient();
+  const user = await getSession(supabase);
 
-  useEffect(() => {
-    const getUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (error) {
-        console.log(
-          "Error getting user object (/welcome: hero): ",
-          error.message
-        );
-        return error;
-      }
-      setUser(data.user);
-      console.log(data.user);
-      return user;
-    };
-    getUser();
-  }, []);
   return (
     <section className="py-20 lg:py-32">
       <div className="container mx-auto px-4">

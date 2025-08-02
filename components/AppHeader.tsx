@@ -1,22 +1,21 @@
 "use client";
 import { createClient } from "@/utils/supabase/client";
-import { User } from "@supabase/supabase-js";
 import { MessageCircle, MessageSquare } from "lucide-react";
 import Link from "next/link";
 import { Suspense, useEffect, useState } from "react";
 
 export default function ChatHeader() {
-  const [user, setUser] = useState<User>();
+  const [userData, setUserData] = useState<any>();
   const supabase = createClient();
 
   useEffect(() => {
     const getUser = async () => {
       const {
-        data: { user },
+        data: { session },
         error,
-      } = await supabase.auth.getUser();
+      } = await supabase.auth.getSession();
 
-      if (error || !user) {
+      if (error || !session) {
         console.log(
           "Error fetching user object (chatHeader): ",
           error ? error : "No supabase error message"
@@ -24,7 +23,7 @@ export default function ChatHeader() {
         return;
       }
 
-      setUser(user);
+      setUserData(session.user.user_metadata);
     };
 
     getUser();
@@ -43,8 +42,8 @@ export default function ChatHeader() {
           <Suspense>
             <img
               src={
-                user && user.user_metadata
-                  ? user.user_metadata.picture || user.user_metadata.avatar_url
+                userData
+                  ? userData.picture || userData.avatar_url
                   : "https://gravatar.com/avatar/25bfd5a94d5a812b662eb18cf906a25a?s=400&d=mp&r=x"
               }
               alt=""

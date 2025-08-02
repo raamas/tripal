@@ -1,21 +1,22 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-export interface Message {
+export type Message = {
   id: number;
   type: "modelResponse" | "userPrompt";
   text: string;
-}
-interface Part {
+};
+type Part = {
   text: string;
-}
-export interface ChatHistoryMessage {
+};
+export type ChatHistoryMessage = {
   role: "user" | "assistant" | "system" | "data";
   content: string;
-}
+};
 
 export class AmadeusClass {
   private key: string;
@@ -136,3 +137,33 @@ export class AmadeusClass {
     return searchResults.data;
   }
 }
+
+export type Plan = {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  duration: number;
+};
+
+export const getSession = async (
+  supabase: SupabaseClient<any, "public", any>
+) => {
+  const { error } = await supabase.auth.getUser();
+  if (error) {
+    console.log("Error getting user object (/welcome header): ", error.message);
+    return false;
+  }
+  return true;
+};
+
+export const getUserMetadata = async (supabase: SupabaseClient) => {
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+  if (error || !user) {
+    return { error, user: null };
+  }
+  return { user: user.user_metadata, error: null };
+};

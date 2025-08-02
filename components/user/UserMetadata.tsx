@@ -10,13 +10,16 @@ export default function UserMetadata() {
 
   useEffect(() => {
     const getUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
-      if (error) {
+      const {
+        data: { session },
+        error,
+      } = await supabase.auth.getSession();
+      if (error || !session) {
         console.log("Error getting the user object. (app/users/me)");
         return error;
       }
 
-      setUser(data.user);
+      setUser(session!.user);
 
       return user;
     };
@@ -45,9 +48,9 @@ export default function UserMetadata() {
 
           <div>
             <p className="font-light">Your interests:</p>
-            {user.user_metadata.likes.map((l: string) => {
-              <h3 className="text-lg text-blue-800">{l}</h3>;
-            })}
+            {user.user_metadata.likes.map((l: string) => (
+              <h3 className="text-lg text-blue-800">{l}</h3>
+            ))}
           </div>
         </div>
       )}
